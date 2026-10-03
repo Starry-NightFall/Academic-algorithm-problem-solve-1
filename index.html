@@ -4,832 +4,578 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Basic Problem Statements in C</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script>tailwind.config = { darkMode: 'class' }</script>
-<style type="text/tailwindcss">
-  .problem { @apply rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-800/60; }
-  .problem[open] { @apply ring-1 ring-indigo-400/60; }
-  .problem > summary { @apply flex cursor-pointer list-none items-center gap-3 px-4 py-3 sm:px-5 sm:py-4 select-none; }
-  .problem > summary::-webkit-details-marker { display: none; }
-  .num { @apply flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-600 text-sm font-bold text-white; }
-  .ttl { @apply flex-1 text-sm font-semibold text-slate-800 dark:text-slate-100 sm:text-base; }
-  .chev { @apply h-5 w-5 shrink-0 text-slate-400 transition-transform duration-200; }
-  .problem[open] .chev { @apply rotate-180; }
-  .body { @apply border-t border-slate-200 px-4 py-4 dark:border-slate-700 sm:px-5; }
-  .prose-c h3 { @apply mt-5 mb-2 text-sm font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400; }
-  .prose-c h3:first-child { @apply mt-0; }
-  .prose-c p { @apply my-2 leading-relaxed text-slate-700 dark:text-slate-300; }
-  .prose-c ul { @apply my-2 list-disc space-y-1 pl-6 text-slate-700 dark:text-slate-300; }
-  .prose-c ol { @apply my-2 list-decimal space-y-1 pl-6 text-slate-700 dark:text-slate-300; }
-  .prose-c code { @apply rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[0.85em] text-pink-600 dark:bg-slate-700 dark:text-pink-300; }
-  .prose-c blockquote { @apply my-3 border-l-4 border-amber-400 bg-amber-50 px-4 py-2 dark:bg-amber-900/20; }
-  .code-wrap { @apply relative my-3; }
-  .code-wrap pre { @apply overflow-x-auto rounded-lg bg-slate-900 p-4 text-sm leading-relaxed text-slate-100; }
-  .code-wrap pre code { @apply bg-transparent p-0 text-slate-100 dark:bg-transparent dark:text-slate-100; }
-  .copy-btn { @apply absolute right-2 top-2 rounded-md bg-slate-700 px-2 py-1 text-xs text-slate-200 opacity-0 transition hover:bg-slate-600 group-hover:opacity-100 focus:opacity-100; }
-  .code-wrap:hover .copy-btn { @apply opacity-100; }
-  .prose-c table { @apply my-3 w-full text-left text-sm; }
-  .prose-c th { @apply border-b-2 border-slate-300 px-3 py-2 dark:border-slate-600; }
-  .prose-c td { @apply border-b border-slate-200 px-3 py-2 dark:border-slate-700; }
-  .prose-c strong { @apply font-semibold text-slate-900 dark:text-white; }
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f1f5f4;--card:#fff;--ink:#12201e;--mut:#5b6d6a;--line:#d5e0dd;--acc:#0f766e;--soft:#d9f5ef;--code:#0d1b1a;--ct:#d6efe9;--k:#5eead4;--s:#fcd34d;--c:#7c928e;--n:#f9a8d4}
+:root[data-theme=dark]{--bg:#0b1312;--card:#121e1c;--ink:#e3efec;--mut:#8da4a0;--line:#223532;--acc:#2dd4bf;--soft:#123c37;--code:#060d0c}
+*{box-sizing:border-box}
+html{scroll-padding-top:5rem}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Bricolage Grotesque",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+code,pre{font-family:"JetBrains Mono",ui-monospace,monospace}
+.wrap{max-width:860px;margin:0 auto;padding:0 1.1rem}
+header{padding:3.5rem 0 2rem;border-bottom:1px solid var(--line)}
+.top{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+h1{font-size:clamp(2.2rem,7vw,4rem);line-height:1.02;letter-spacing:-.03em;margin:0;font-weight:800}
+h1 span{color:var(--acc)}
+header p{max-width:34rem;color:var(--mut);margin:1rem 0 0;font-size:1.05rem}
+button{font:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.icon{border:1px solid var(--line);background:var(--card);border-radius:10px;padding:.45rem .8rem;font-size:.9rem}
+.bar{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);padding:.8rem 0;border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center}
+#q{flex:1 1 220px;border:1px solid var(--line);background:var(--card);color:inherit;border-radius:10px;padding:.55rem .9rem;font:inherit;font-size:.95rem}
+.chips{display:flex;gap:.4rem;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:transparent;border-radius:99px;padding:.3rem .85rem;font-size:.88rem}
+.chip[aria-pressed=true]{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:700}
+.link{background:none;border:0;color:var(--acc);font-weight:700;font-size:.9rem;padding:.3rem}
+main{padding:1rem 0 3rem}
+section>h2{font-size:1.5rem;letter-spacing:-.02em;margin:2rem 0 .2rem}
+section>p.sub{margin:0 0 1rem;color:var(--mut);font-size:.95rem}
+details{background:var(--card);border:1px solid var(--line);border-radius:14px;margin-bottom:.7rem;overflow:hidden}
+details[open]{border-color:var(--acc)}
+summary{display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;cursor:pointer;list-style:none}
+summary::-webkit-details-marker{display:none}
+.n{flex:none;min-width:2.3rem;height:2.3rem;border-radius:8px;background:var(--soft);color:var(--acc);display:grid;place-items:center;font:500 .9rem "JetBrains Mono",monospace}
+details[open] .n{background:var(--acc);color:var(--bg)}
+.t{flex:1;font-weight:700;line-height:1.35}
+.chev{width:1.1rem;height:1.1rem;flex:none;color:var(--mut);transition:transform .2s}
+details[open] .chev{transform:rotate(180deg)}
+.body{padding:.2rem 1.2rem 1.2rem 1.2rem;border-top:1px solid var(--line)}
+.body h3{font-size:.95rem;margin:1.2rem 0 .4rem;color:var(--acc)}
+.body p,.body li{max-width:68ch;margin:.4rem 0}
+.body ul{padding-left:1.2rem}
+:not(pre)>code{background:var(--soft);color:var(--acc);padding:.1rem .35rem;border-radius:5px;font-size:.86em}
+.cw{position:relative;margin:.6rem 0}
+pre{margin:0;background:var(--code);color:var(--ct);border-radius:10px;padding:1rem;overflow-x:auto;font-size:.84rem;line-height:1.6}
+.cp{position:absolute;top:.5rem;right:.5rem;background:#ffffff1c;border:0;color:#d6efe9;border-radius:6px;padding:.2rem .6rem;font-size:.75rem}
+.cp:hover{background:#ffffff33}
+.k{color:var(--k)}.s{color:var(--s)}.c{color:var(--c);font-style:italic}.nu{color:var(--n)}
+.note{border-left:3px solid var(--s);background:color-mix(in srgb,var(--s) 14%,transparent);padding:.5rem .9rem;border-radius:0 8px 8px 0;max-width:68ch}
+table{width:100%;border-collapse:collapse;font-size:.92rem;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:.55rem .9rem;border-bottom:1px solid var(--line)}
+th{background:var(--soft);color:var(--acc)}
+tr:last-child td{border:0}
+td:first-child{width:3.5rem;font-family:"JetBrains Mono",monospace}
+#empty{text-align:center;color:var(--mut);margin:2rem 0}
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:2rem 0}
+.hide{display:none!important}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-900 antialiased dark:bg-slate-900 dark:text-slate-100">
-<header class="border-b border-slate-200 bg-gradient-to-br from-indigo-600 to-violet-700 text-white dark:border-slate-700">
-  <div class="mx-auto flex max-w-4xl items-start justify-between gap-4 px-4 py-10">
-    <div>
-      <p class="mb-2 inline-block rounded-full bg-white/15 px-3 py-1 text-xs font-medium">15 Problems · C Language</p>
-      <h1 class="text-2xl font-extrabold sm:text-4xl">Basic Problem Statements in C</h1>
-      <p class="mt-2 max-w-2xl text-indigo-100">Questions and beginner-friendly solutions covering strings, functions, recursion and basic character processing.</p>
-    </div>
-    <button id="theme" type="button" class="shrink-0 rounded-lg bg-white/15 px-3 py-2 text-sm hover:bg-white/25" aria-label="Toggle dark mode">🌓</button>
+<body>
+<header><div class="wrap">
+  <div class="top">
+    <h1>Basic problems<br>in <span>C</span></h1>
+    <button id="theme" class="icon" type="button" aria-label="Toggle dark mode">Theme</button>
   </div>
-</header>
+  <p>Fifteen beginner problems on strings and recursion. Every string is read with a plain <code>getchar()</code> loop, so you see exactly what happens to each character.</p>
+</div></header>
 
-<main class="mx-auto max-w-4xl px-4 py-6">
-  <div class="sticky top-0 z-10 -mx-4 mb-4 flex flex-col gap-2 bg-slate-50/90 px-4 py-3 backdrop-blur dark:bg-slate-900/90 sm:flex-row sm:items-center">
-    <input id="q" type="search" placeholder="Search problems… (e.g. recursion, string, GCD)" class="w-full flex-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-indigo-400 dark:border-slate-600 dark:bg-slate-800">
-    <div class="flex gap-2">
-      <button id="expand" type="button" class="rounded-lg bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">Expand all</button>
-      <button id="collapse" type="button" class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium hover:bg-slate-100 dark:border-slate-600 dark:hover:bg-slate-800">Collapse all</button>
-    </div>
+<div class="bar"><div class="wrap">
+  <input id="q" type="search" placeholder="Search: recursion, GCD, vowels…" aria-label="Search problems">
+  <div class="chips" role="group" aria-label="Filter by topic">
+    <button class="chip" type="button" data-tag="" aria-pressed="true">All</button>
+    <button class="chip" type="button" data-tag="Strings" aria-pressed="false">Strings</button>
+    <button class="chip" type="button" data-tag="Recursion" aria-pressed="false">Recursion</button>
   </div>
+  <span><button id="expand" class="link" type="button">Expand all</button><button id="collapse" class="link" type="button">Collapse all</button></span>
+</div></div>
 
-  <div id="list" class="space-y-3">
-<details class="problem group" data-title="write a program in c to input a string and print it.">
-  <summary>
-    <span class="num">1</span>
-    <span class="ttl">Write a program in C to input a string and print it.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to input a string and print it.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+<main class="wrap">
+  <div id="list"></div>
+  <p id="empty" class="hide">No problems match your search. Try a shorter keyword.</p>
+  <section>
+    <h2>Concept summary</h2>
+    <p class="sub">What each problem practises.</p>
+    <table><thead><tr><th>#</th><th>Main concept</th></tr></thead><tbody id="sum"></tbody></table>
+  </section>
+</main>
+<footer>Basic Problem Statements in C</footer>
+
+<script>
+const R = String.raw;
+const READ = (v, size) => R`    while (i < SIZE - 1 && (ch = getchar()) != '\n' && ch != EOF) {
+        ${v}[i++] = (char)ch;
+    }
+    ${v}[i] = '\0';`;
+const LOOPNOTE = '<code>getchar()</code> reads one character at a time until Enter or end of input, or until the buffer is full. Spaces are kept, and <code>\'\\0\'</code> is added at the end.';
+
+const P = [
+{t:'Write a program in C to input a string and print it.',g:'Strings',k:'String input and output',
+ s:[[0,R`#include <stdio.h>
+#define SIZE 100
 
 int main() {
-    char str[100];
+    char str[SIZE];
+    int i = 0, ch;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
-    printf(&quot;The string you entered is: %s&quot;, str);
-
+    printf("The string you entered is: %s\n", str);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<ul>
-<li><code>char str[100]</code> creates a character array that can store a string.</li>
-<li><code>fgets()</code> is used so that the input can contain spaces.</li>
-<li>The entered string is then printed using <code>%s</code>.</li>
-</ul></div>
-</details>
-<details class="problem group" data-title="perform string copy with and without library functions.">
-  <summary>
-    <span class="num">2</span>
-    <span class="ttl">Perform string copy with and without library functions.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Perform string copy with and without library functions.</p>
-<h3>Solution 1 — Using the Library Function</h3>
-<p>The standard library function <code>strcpy()</code> can be used to copy one string
-into another.</p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
+}`]],
+ e:`<ul><li><code>char str[SIZE]</code> is the character array that holds the string.</li><li>${LOOPNOTE}</li><li>The loop stops at <code>SIZE - 1</code> so there is always room for the final <code>'\\0'</code>.</li></ul>`},
+
+{t:'Perform string copy with and without library functions.',g:'Strings',k:'String copying',
+ s:[['Using the library function',R`#include <stdio.h>
+#include <string.h>
+#define SIZE 100
 
 int main() {
-    char source[100];
-    char destination[100];
+    char source[SIZE], destination[SIZE];
+    int i = 0, ch;
 
-    printf(&quot;Enter the source string: &quot;);
-    fgets(source, sizeof(source), stdin);
+    printf("Enter the source string: ");
+${READ('source')}
 
     strcpy(destination, source);
 
-    printf(&quot;Copied string: %s&quot;, destination);
-
+    printf("Copied string: %s\n", destination);
     return 0;
-}
-</code></pre></div>
-<h3>Solution 2 — Without Using a Library Function</h3>
-<p>Here, the characters are copied one by one.</p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`],['Without a library function',R`#include <stdio.h>
+#define SIZE 100
 
 int main() {
-    char source[100];
-    char destination[100];
-    int i = 0;
+    char source[SIZE], destination[SIZE];
+    int i = 0, ch, j = 0;
 
-    printf(&quot;Enter the source string: &quot;);
-    fgets(source, sizeof(source), stdin);
+    printf("Enter the source string: ");
+${READ('source')}
 
-    while (source[i] != '\0') {
-        destination[i] = source[i];
-        i++;
+    while (source[j] != '\0') {
+        destination[j] = source[j];
+        j++;
     }
+    destination[j] = '\0';
 
-    destination[i] = '\0';
-
-    printf(&quot;Copied string: %s&quot;, destination);
-
+    printf("Copied string: %s\n", destination);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>A C string ends with the null character <code>'\0'</code>. Therefore, while copying
-manually, we copy characters until <code>'\0'</code> is reached and then add <code>'\0'</code>
-to the destination string.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to find the length of a string with and without using library functions.">
-  <summary>
-    <span class="num">3</span>
-    <span class="ttl">Write a program in C to find the length of a string with and without using library functions.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to find the length of a string with and without
-using library functions.</p>
-<h3>Solution 1 — Using <code>strlen()</code></h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;string.h&gt;
+}`]],
+ e:`<p>A C string ends with <code>'\\0'</code>. Copying by hand means moving characters until that marker, then adding <code>'\\0'</code> to the destination.</p>`},
+
+{t:'Write a program in C to find the length of a string with and without using library functions.',g:'Strings',k:'String length',
+ s:[['Using strlen()',R`#include <stdio.h>
+#include <string.h>
+#define SIZE 100
 
 int main() {
-    char str[100];
+    char str[SIZE];
+    int i = 0, ch;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
-    /* Remove the newline character */
-    str[strcspn(str, &quot;\n&quot;)] = '\0';
-
-    printf(&quot;Length of the string is: %zu\n&quot;, strlen(str));
-
+    printf("Length of the string is: %zu\n", strlen(str));
     return 0;
-}
-</code></pre></div>
-<h3>Solution 2 — Without Using <code>strlen()</code></h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`],['Without strlen()',R`#include <stdio.h>
+#define SIZE 100
 
 int main() {
-    char str[100];
-    int length = 0;
+    char str[SIZE];
+    int i = 0, ch, length = 0;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
-    while (str[length] != '\0' &amp;&amp; str[length] != '\n') {
+    while (str[length] != '\0') {
         length++;
     }
 
-    printf(&quot;Length of the string is: %d\n&quot;, length);
-
+    printf("Length of the string is: %d\n", length);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>A string's length is the number of characters before the null character
-<code>'\0'</code>. The newline inserted by <code>fgets()</code> is excluded in the second
-solution.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to compare two strings without using string library functions.">
-  <summary>
-    <span class="num">4</span>
-    <span class="ttl">Write a program in C to compare two strings without using string library functions.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to compare two strings without using string library
-functions.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`]],
+ e:`<p>The length is the number of characters before <code>'\\0'</code>. Because the loop never stores the newline, no extra clean-up is needed.</p>`},
+
+{t:'Write a program in C to compare two strings without using string library functions.',g:'Strings',k:'String comparison',
+ s:[[0,R`#include <stdio.h>
+#define SIZE 100
 
 int main() {
-    char str1[100], str2[100];
-    int i = 0;
-    int equal = 1;
+    char str1[SIZE], str2[SIZE];
+    int i = 0, ch, j = 0;
 
-    printf(&quot;Input the 1st string: &quot;);
-    fgets(str1, sizeof(str1), stdin);
+    printf("Input the 1st string: ");
+${READ('str1')}
 
-    printf(&quot;Input the 2nd string: &quot;);
-    fgets(str2, sizeof(str2), stdin);
+    i = 0;
+    printf("Input the 2nd string: ");
+${READ('str2')}
 
-    while (str1[i] != '\0' || str2[i] != '\0') {
-        if (str1[i] == '\n') {
-            if (str2[i] == '\n' || str2[i] == '\0')
-                break;
-        }
-
-        if (str1[i] != str2[i]) {
-            equal = 0;
-            break;
-        }
-
-        i++;
+    while (str1[j] != '\0' && str1[j] == str2[j]) {
+        j++;
     }
 
-    if (equal)
-        printf(&quot;Strings are equal.\n&quot;);
+    if (str1[j] == str2[j])
+        printf("Strings are equal.\n");
     else
-        printf(&quot;Strings are not equal.\n&quot;);
+        printf("Strings are not equal.\n");
 
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>The program compares corresponding characters of the two strings one by
-one. If any pair of characters is different, the strings are not equal.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to print only the alphabets from the string and then the length.">
-  <summary>
-    <span class="num">5</span>
-    <span class="ttl">Write a program in C to print only the alphabets from the string and then the length.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to print only the alphabets from the string and
-then the length.</p>
-<p><strong>Input:</strong></p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">Hello, this is 'algorithm lab'
-</code></pre></div>
-<p><strong>Expected Output:</strong></p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">Hello this is algorithm lab
-23
-</code></pre></div>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;ctype.h&gt;
+}`]],
+ e:`<p>The loop walks both strings while the characters match. It stops at the first difference or at the end of <code>str1</code>. If both strings are at <code>'\\0'</code> together, they are equal.</p>`},
+
+{t:'Write a program in C to print only the alphabets from the string and then the length.',g:'Strings',k:'Character filtering',
+ pre:`<p><strong>Input:</strong> <code>Hello, this is 'algorithm lab'</code></p><p><strong>Expected output:</strong> <code>Hello this is algorithm lab</code> then <code>23</code></p>`,
+ s:[[0,R`#include <stdio.h>
+#include <ctype.h>
+#define SIZE 200
 
 int main() {
-    char str[200];
-    int i;
-    int length = 0;
+    char str[SIZE];
+    int i = 0, ch, length = 0;
 
-    printf(&quot;Input: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input: ");
+${READ('str')}
 
-    printf(&quot;Output: &quot;);
-
+    printf("Output: ");
     for (i = 0; str[i] != '\0'; i++) {
-        if (isalpha((unsigned char)str[i]) || str[i] == ' ') {
-            printf(&quot;%c&quot;, str[i]);
-
-            if (isalpha((unsigned char)str[i])) {
-                length++;
-            }
+        if (isalpha((unsigned char)str[i])) {
+            printf("%c", str[i]);
+            length++;
+        } else if (str[i] == ' ') {
+            printf(" ");
         }
     }
 
-    printf(&quot;\n%d\n&quot;, length);
-
+    printf("\n%d\n", length);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<ul>
-<li><code>isalpha()</code> checks whether a character is an alphabet.</li>
-<li>Spaces are also printed so that the words remain separated.</li>
-<li>Only alphabetic characters are counted in the length.</li>
-<li>For the given input, the number of alphabetic characters is <code>23</code>.</li>
-</ul></div>
-</details>
-<details class="problem group" data-title="write a program in c to count the total number of words in a string.">
-  <summary>
-    <span class="num">6</span>
-    <span class="ttl">Write a program in C to count the total number of words in a string.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to count the total number of words in a string.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;ctype.h&gt;
+}`]],
+ e:`<ul><li><code>isalpha()</code> checks whether a character is a letter.</li><li>Spaces are printed too, so words stay separated, but only letters are counted.</li><li>The sample input has <code>23</code> letters.</li></ul>`},
+
+{t:'Write a program in C to count the total number of words in a string.',g:'Strings',k:'Word counting',
+ s:[[0,R`#include <stdio.h>
+#include <ctype.h>
+#define SIZE 200
 
 int main() {
-    char str[200];
-    int i;
-    int words = 0;
-    int inWord = 0;
+    char str[SIZE];
+    int i = 0, ch, words = 0, inWord = 0;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
     for (i = 0; str[i] != '\0'; i++) {
-        if (!isspace((unsigned char)str[i]) &amp;&amp; inWord == 0) {
+        if (!isspace((unsigned char)str[i]) && !inWord) {
             words++;
             inWord = 1;
-        }
-        else if (isspace((unsigned char)str[i])) {
+        } else if (isspace((unsigned char)str[i])) {
             inWord = 0;
         }
     }
 
-    printf(&quot;Total number of words in the string is: %d\n&quot;, words);
-
+    printf("Total number of words in the string is: %d\n", words);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>A new word begins when: 1. The current character is not whitespace. 2.
-The previous position was not already inside a word.</p>
-<p>This approach also handles multiple spaces correctly.</p></div>
-</details>
-<details class="problem group" data-title="create a function in c to count the total number of alphabets, digits, and special characters in a string.">
-  <summary>
-    <span class="num">7</span>
-    <span class="ttl">Create a function in C to count the total number of alphabets, digits, and special characters in a string.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Create a function in C to count the total number of alphabets, digits,
-and special characters in a string.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;ctype.h&gt;
+}`]],
+ e:`<p>A new word starts when the current character is not whitespace <em>and</em> the previous one was whitespace (or the string just began). That also handles repeated spaces.</p>`},
+
+{t:'Create a function in C to count the total number of alphabets, digits, and special characters in a string.',g:'Strings',k:'Functions + character classification',
+ s:[[0,R`#include <stdio.h>
+#include <ctype.h>
+#define SIZE 200
 
 void countCharacters(char str[]) {
-    int alphabets = 0;
-    int digits = 0;
-    int special = 0;
-    int i;
+    int alphabets = 0, digits = 0, special = 0;
 
-    for (i = 0; str[i] != '\0' &amp;&amp; str[i] != '\n'; i++) {
-        if (isalpha((unsigned char)str[i])) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        if (isalpha((unsigned char)str[i]))
             alphabets++;
-        }
-        else if (isdigit((unsigned char)str[i])) {
+        else if (isdigit((unsigned char)str[i]))
             digits++;
-        }
-        else {
+        else
             special++;
-        }
     }
 
-    printf(&quot;Number of Alphabets in the string is: %d\n&quot;, alphabets);
-    printf(&quot;Number of Digits in the string is: %d\n&quot;, digits);
-    printf(&quot;Number of Special characters in the string is: %d\n&quot;, special);
+    printf("Number of Alphabets in the string is: %d\n", alphabets);
+    printf("Number of Digits in the string is: %d\n", digits);
+    printf("Number of Special characters in the string is: %d\n", special);
 }
 
 int main() {
-    char str[200];
+    char str[SIZE];
+    int i = 0, ch;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
     countCharacters(str);
-
     return 0;
-}
-</code></pre></div>
-<h3>Important Note</h3>
-<p>For the exact input <code>Welcome to w3resource.com</code>, the standard
-classification used by the program gives:</p>
-<p><code>text
-Alphabets: 21
-Digits: 1
-Special characters: 3</code>The three special characters are the <strong>two spaces</strong> and the <strong>period
-(<code>.</code>)</strong>.</p>
-<p>The PDF states <code>4</code> special characters, which does not match the supplied
-input under the usual C classification of alphabet/digit/special
-character. fileciteturn0file0L29-L38</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to count the total number of vowels or consonants in a string.">
-  <summary>
-    <span class="num">8</span>
-    <span class="ttl">Write a program in C to count the total number of vowels or consonants in a string.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to count the total number of vowels or consonants
-in a string.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
-#include &lt;ctype.h&gt;
+}`]],
+ note:`For <code>Welcome to w3resource.com</code> the program prints 21 alphabets, 1 digit and 3 special characters (two spaces and the period). The original notes said 4 special characters, which does not match this input.`,
+ e:`<p>Anything that is not a letter or a digit counts as special, including spaces and punctuation.</p>`},
+
+{t:'Write a program in C to count the total number of vowels or consonants in a string.',g:'Strings',k:'Vowel and consonant counting',
+ s:[[0,R`#include <stdio.h>
+#include <ctype.h>
+#define SIZE 200
 
 int main() {
-    char str[200];
-    int vowels = 0;
-    int consonants = 0;
-    int i;
+    char str[SIZE];
+    int i = 0, ch, vowels = 0, consonants = 0;
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
     for (i = 0; str[i] != '\0'; i++) {
-        char ch = tolower((unsigned char)str[i]);
+        char c = tolower((unsigned char)str[i]);
 
-        if (ch &gt;= 'a' &amp;&amp; ch &lt;= 'z') {
-            if (ch == 'a' || ch == 'e' || ch == 'i' ||
-                ch == 'o' || ch == 'u') {
+        if (c >= 'a' && c <= 'z') {
+            if (c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u')
                 vowels++;
-            }
-            else {
+            else
                 consonants++;
-            }
         }
     }
 
-    printf(&quot;The total number of vowels in the string is: %d\n&quot;, vowels);
-    printf(&quot;The total number of consonants in the string is: %d\n&quot;, consonants);
-
+    printf("The total number of vowels in the string is: %d\n", vowels);
+    printf("The total number of consonants in the string is: %d\n", consonants);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>Only alphabetic characters are considered. Therefore, spaces, digits,
-and punctuation are ignored.</p>
-<p>For the given input: - Vowels = <code>9</code> - Consonants = <code>12</code></p></div>
-</details>
-<details class="problem group" data-title="write a program in c to find the maximum number of times a character appears in a string.">
-  <summary>
-    <span class="num">9</span>
-    <span class="ttl">Write a program in C to find the maximum number of times a character appears in a string.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to find the maximum number of times a character
-appears in a string.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`]],
+ e:`<p>Only letters are considered, so spaces, digits and punctuation are ignored. For <code>Welcome to w3resource.com</code> the result is 9 vowels and 12 consonants.</p>`},
+
+{t:'Write a program in C to find the maximum number of times a character appears in a string.',g:'Strings',k:'Character frequency',
+ s:[[0,R`#include <stdio.h>
+#define SIZE 200
 
 int main() {
-    char str[200];
+    char str[SIZE];
     int frequency[256] = {0};
-    int i;
-    int max = 0;
+    int i = 0, ch, max = 0;
     unsigned char maxChar = '\0';
 
-    printf(&quot;Input the string: &quot;);
-    fgets(str, sizeof(str), stdin);
+    printf("Input the string: ");
+${READ('str')}
 
     for (i = 0; str[i] != '\0'; i++) {
-        unsigned char ch = (unsigned char)str[i];
-
-        if (ch != '\n') {
-            frequency[ch]++;
-        }
+        frequency[(unsigned char)str[i]]++;
     }
 
-    for (i = 0; i &lt; 256; i++) {
-        if (frequency[i] &gt; max) {
+    for (i = 0; i < 256; i++) {
+        if (frequency[i] > max) {
             max = frequency[i];
             maxChar = (unsigned char)i;
         }
     }
 
-    printf(&quot;The Highest frequency of character '%c'\n&quot;, maxChar);
-    printf(&quot;appears number of times: %d\n&quot;, max);
-
+    printf("The highest frequency of character '%c'\n", maxChar);
+    printf("appears number of times: %d\n", max);
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>The <code>frequency</code> array stores how many times each character occurs.</p>
-<p>For example:</p>
-<p><code>text
-frequency['e']</code>stores the number of occurrences of <code>e</code>.</p>
-<p>The program then searches for the largest frequency.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to calculate the sum of numbers from 1 to n using recursion.">
-  <summary>
-    <span class="num">10</span>
-    <span class="ttl">Write a program in C to calculate the sum of numbers from 1 to n using recursion.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to calculate the sum of numbers from 1 to <code>n</code> using
-recursion.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`]],
+ e:`<p><code>frequency[ch]</code> stores how many times the character <code>ch</code> appears. A second loop finds the largest count. Spaces are counted as characters too.</p>`},
+
+{t:'Write a program in C to calculate the sum of numbers from 1 to n using recursion.',g:'Recursion',k:'Recursion + summation',
+ s:[[0,R`#include <stdio.h>
 
 int sum(int n) {
     if (n == 0) {
         return 0;
     }
-
     return n + sum(n - 1);
 }
 
 int main() {
     int n;
 
-    printf(&quot;Input the last number of the range starting from 1: &quot;);
-    scanf(&quot;%d&quot;, &amp;n);
+    printf("Input the last number of the range starting from 1: ");
+    scanf("%d", &n);
 
-    printf(&quot;The sum of numbers from 1 to %d: %d\n&quot;, n, sum(n));
-
+    printf("The sum of numbers from 1 to %d: %d\n", n, sum(n));
     return 0;
-}
-</code></pre></div>
-<h3>How Recursion Works</h3>
-<p>For <code>n = 5</code>:</p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">sum(5)
+}`],['How it unfolds for n = 5',R`sum(5)
 = 5 + sum(4)
 = 5 + 4 + sum(3)
 = 5 + 4 + 3 + sum(2)
 = 5 + 4 + 3 + 2 + sum(1)
 = 5 + 4 + 3 + 2 + 1 + sum(0)
-= 15
-</code></pre></div>
-<p><code>sum(0)</code> is the <strong>base case</strong> that stops the recursion.</p></div>
-</details>
-<details class="problem group" data-title="create a recursive function for creating fibonacci series.">
-  <summary>
-    <span class="num">11</span>
-    <span class="ttl">Create a recursive function for creating Fibonacci series.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Create a recursive function for creating Fibonacci series.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+= 15`]],
+ e:`<p><code>sum(0)</code> is the <strong>base case</strong>. It stops the recursion.</p>`},
+
+{t:'Create a recursive function for creating Fibonacci series.',g:'Recursion',k:'Recursive Fibonacci function',
+ s:[[0,R`#include <stdio.h>
 
 int fibonacci(int n) {
-    if (n == 0) {
-        return 0;
-    }
-
-    if (n == 1) {
-        return 1;
-    }
-
+    if (n == 0) return 0;
+    if (n == 1) return 1;
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 int main() {
     int n, i;
 
-    printf(&quot;Enter the number of terms: &quot;);
-    scanf(&quot;%d&quot;, &amp;n);
+    printf("Enter the number of terms: ");
+    scanf("%d", &n);
 
-    printf(&quot;Fibonacci Series: &quot;);
-
-    for (i = 0; i &lt; n; i++) {
-        printf(&quot;%d &quot;, fibonacci(i));
+    printf("Fibonacci Series: ");
+    for (i = 0; i < n; i++) {
+        printf("%d ", fibonacci(i));
     }
-
-    printf(&quot;\n&quot;);
-
+    printf("\n");
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>The Fibonacci sequence follows:</p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">F(n) = F(n - 1) + F(n - 2)
-```with:
+}`]],
+ e:`<p><code>F(n) = F(n-1) + F(n-2)</code>, with <code>F(0) = 0</code> and <code>F(1) = 1</code>. The sequence starts <code>0 1 1 2 3 5 8 13 …</code></p>`},
 
-```text
-F(0) = 0
-F(1) = 1
-```So the sequence begins:
-
-```text
-0 1 1 2 3 5 8 13 ...
-</code></pre></div></div>
-</details>
-<details class="problem group" data-title="write a program in c to print the fibonacci series using recursion.">
-  <summary>
-    <span class="num">12</span>
-    <span class="ttl">Write a program in C to print the Fibonacci Series using recursion.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to print the Fibonacci Series using recursion.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+{t:'Write a program in C to print the Fibonacci Series using recursion.',g:'Recursion',k:'Fibonacci series using recursion',
+ s:[[0,R`#include <stdio.h>
 
 int fibonacci(int n) {
-    if (n == 0) {
-        return 0;
-    }
-
-    if (n == 1) {
-        return 1;
-    }
-
+    if (n == 0) return 0;
+    if (n == 1) return 1;
     return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
 int main() {
-    int n;
-    int i;
+    int n, i;
 
-    printf(&quot;Input number of terms for the Series: &quot;);
-    scanf(&quot;%d&quot;, &amp;n);
+    printf("Input number of terms for the Series: ");
+    scanf("%d", &n);
 
-    printf(&quot;The Series are:\n&quot;);
-
-    for (i = 0; i &lt; n; i++) {
-        printf(&quot;%d &quot;, fibonacci(i));
+    printf("The Series are:\n");
+    for (i = 0; i < n; i++) {
+        printf("%d ", fibonacci(i));
     }
-
-    printf(&quot;\n&quot;);
-
+    printf("\n");
     return 0;
-}
-</code></pre></div>
-<h3>Output for <code>n = 10</code></h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">0 1 1 2 3 5 8 13 21 34
-</code></pre></div></div>
-</details>
-<details class="problem group" data-title="write a program in c to count the digits of a given number using recursion.">
-  <summary>
-    <span class="num">13</span>
-    <span class="ttl">Write a program in C to count the digits of a given number using recursion.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to count the digits of a given number using
-recursion.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`]],
+ e:`<p>For <code>n = 10</code> the output is <code>0 1 1 2 3 5 8 13 21 34</code>.</p>`},
+
+{t:'Write a program in C to count the digits of a given number using recursion.',g:'Recursion',k:'Recursion + digit counting',
+ s:[[0,R`#include <stdio.h>
 
 int countDigits(long long n) {
-    if (n &gt;= -9 &amp;&amp; n &lt;= 9) {
+    if (n >= -9 && n <= 9) {
         return 1;
     }
-
     return 1 + countDigits(n / 10);
 }
 
 int main() {
     long long n;
 
-    printf(&quot;Input a number: &quot;);
-    scanf(&quot;%lld&quot;, &amp;n);
+    printf("Input a number: ");
+    scanf("%lld", &n);
 
-    printf(&quot;The number of digits in the number is: %d\n&quot;,
-           countDigits(n));
-
+    printf("The number of digits in the number is: %d\n", countDigits(n));
     return 0;
-}
-</code></pre></div>
-<h3>Explanation</h3>
-<p>Integer division by <code>10</code> removes the last digit.</p>
-<p>For example:</p>
-<p><code>text
-50 / 10 = 5
-5 / 10 = 0</code>Therefore, there are two digits.</p>
-<p>The function stops when the remaining number has only one digit.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to find the gcd of two numbers using recursion.">
-  <summary>
-    <span class="num">14</span>
-    <span class="ttl">Write a program in C to find the GCD of two numbers using recursion.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to find the GCD of two numbers using recursion.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+}`]],
+ e:`<p>Dividing by <code>10</code> drops the last digit: <code>50 / 10 = 5</code>, so 50 has two digits. The function stops when one digit is left.</p>`},
+
+{t:'Write a program in C to find the GCD of two numbers using recursion.',g:'Recursion',k:'Recursion + GCD',
+ s:[[0,R`#include <stdio.h>
 
 int gcd(int a, int b) {
     if (b == 0) {
         return a;
     }
-
     return gcd(b, a % b);
 }
 
 int main() {
     int a, b;
 
-    printf(&quot;Input 1st number: &quot;);
-    scanf(&quot;%d&quot;, &amp;a);
+    printf("Input 1st number: ");
+    scanf("%d", &a);
+    printf("Input 2nd number: ");
+    scanf("%d", &b);
 
-    printf(&quot;Input 2nd number: &quot;);
-    scanf(&quot;%d&quot;, &amp;b);
-
-    printf(&quot;The GCD of %d and %d is: %d\n&quot;, a, b, gcd(a, b));
-
+    printf("The GCD of %d and %d is: %d\n", a, b, gcd(a, b));
     return 0;
-}
-</code></pre></div>
-<h3>How It Works</h3>
-<p>The program uses the Euclidean algorithm:</p>
-<p><code>text
-gcd(a, b) = gcd(b, a % b)</code>For <code>10</code> and <code>50</code>:</p>
-<p><code>text
-gcd(10, 50)
+}`],['Euclidean algorithm for 10 and 50',R`gcd(10, 50)
 = gcd(50, 10)
 = gcd(10, 0)
-= 10</code>So the GCD is <code>10</code>.</p></div>
-</details>
-<details class="problem group" data-title="write a program in c to find the factorial of a number using recursion.">
-  <summary>
-    <span class="num">15</span>
-    <span class="ttl">Write a program in C to find the Factorial of a number using recursion.</span>
-    <svg class="chev" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.17l3.71-3.94a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd"/></svg>
-  </summary>
-  <div class="body prose-c"><h3>Question</h3>
-<p>Write a program in C to find the Factorial of a number using recursion.</p>
-<h3>Solution</h3>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+= 10`]],
+ e:`<p>The rule is <code>gcd(a, b) = gcd(b, a % b)</code>, and the answer is <code>a</code> once <code>b</code> reaches 0.</p>`},
+
+{t:'Write a program in C to find the Factorial of a number using recursion.',g:'Recursion',k:'Recursion + factorial',
+ s:[[0,R`#include <stdio.h>
 
 long long factorial(int n) {
     if (n == 0 || n == 1) {
         return 1;
     }
-
     return n * factorial(n - 1);
 }
 
 int main() {
     int n;
 
-    printf(&quot;Input a number: &quot;);
-    scanf(&quot;%d&quot;, &amp;n);
+    printf("Input a number: ");
+    scanf("%d", &n);
 
-    if (n &lt; 0) {
-        printf(&quot;Factorial is not defined for negative numbers.\n&quot;);
-    }
-    else {
-        printf(&quot;The Factorial of %d is: %lld\n&quot;, n, factorial(n));
-    }
+    if (n < 0)
+        printf("Factorial is not defined for negative numbers.\n");
+    else
+        printf("The Factorial of %d is: %lld\n", n, factorial(n));
 
     return 0;
-}
-</code></pre></div>
-<h3>How Recursion Works</h3>
-<p>For <code>5!</code>:</p>
-<div class="code-wrap"><button class="copy-btn" type="button">Copy</button><pre><code class="language-text">5!
-= 5 × 4!
-= 5 × 4 × 3!
-= 5 × 4 × 3 × 2!
-= 5 × 4 × 3 × 2 × 1!
-= 120
-```The base case is:
+}`],['How it unfolds for 5!',R`5!
+= 5 * 4!
+= 5 * 4 * 3!
+= 5 * 4 * 3 * 2!
+= 5 * 4 * 3 * 2 * 1
+= 120`]],
+ e:`<p>The base case is <code>n == 0 || n == 1</code>, which returns <code>1</code>. A <code>long long</code> holds results up to <code>20!</code>.</p>`}
+];
 
-```c
-if (n == 0 || n == 1)
-    return 1;
-</code></pre></div></div>
-</details>
-  </div>
-  <p id="empty" class="mt-6 hidden text-center text-slate-500">No problems match your search.</p>
-
-  <section class="mt-10 rounded-xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-700 dark:bg-slate-800/60">
-    <div class="prose-c"><h3>Quick Concept Summary</h3>
-<p>Problem   Main Concept</p>
-<hr />
-<p>1         String input and output
-  2         String copying
-  3         String length
-  4         String comparison
-  5         Character filtering
-  6         Word counting
-  7         Functions + character classification
-  8         Vowel and consonant counting
-  9         Character frequency
-  10        Recursion + summation
-  11        Recursive Fibonacci function
-  12        Fibonacci series using recursion
-  13        Recursion + digit counting
-  14        Recursion + GCD
-  15        Recursion + factorial</p>
-<h2>Important C Concepts Used</h2>
-<ul>
-<li>Character arrays (<code>char[]</code>)</li>
-<li>Strings and the null character (<code>'\0'</code>)</li>
-<li><code>fgets()</code></li>
-<li><code>printf()</code> and <code>scanf()</code></li>
-<li><code>strlen()</code> and <code>strcpy()</code></li>
-<li><code>isalpha()</code>, <code>isdigit()</code>, <code>isspace()</code>, <code>tolower()</code></li>
-<li>Functions</li>
-<li>Arrays</li>
-<li>Recursion</li>
-<li>Base cases</li>
-<li>Euclidean algorithm</li>
-</ul></div>
-  </section>
-</main>
-
-<footer class="py-8 text-center text-xs text-slate-500">Basic Problem Statements in C</footer>
-
-<script>
 const $ = s => document.querySelector(s), all = s => [...document.querySelectorAll(s)];
-$('#expand').onclick = () => all('.problem').forEach(d => d.open = true);
-$('#collapse').onclick = () => all('.problem').forEach(d => d.open = false);
-$('#q').oninput = e => {
-  const v = e.target.value.trim().toLowerCase(); let shown = 0;
-  all('.problem').forEach(d => {
-    const hit = !v || d.dataset.title.includes(v) || d.textContent.toLowerCase().includes(v);
-    d.classList.toggle('hidden', !hit); if (hit) shown++;
+const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const TOK = /(\/\*[\s\S]*?\*\/)|("(?:\\.|[^"\\])*")|('(?:\\.|[^'\\])+')|(#\w+)|\b(int|char|long|void|return|if|else|while|for|unsigned|sizeof)\b|\b(\d+)\b/g;
+const hl = code => esc(code).replace(TOK, (m,c,s1,s2,pp,kw,num) =>
+  c ? `<span class="c">${m}</span>` : (s1||s2) ? `<span class="s">${m}</span>` :
+  (pp||kw) ? `<span class="k">${m}</span>` : `<span class="nu">${m}</span>`);
+const CH = '<svg class="chev" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.2 7.2a.75.75 0 011.06.02L10 11.2l3.7-3.96a.75.75 0 111.1 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"/></svg>';
+
+const groups = {Strings:'Reading, copying, measuring and classifying text.', Recursion:'Functions that call themselves, each with a base case.'};
+let html = '', last = '';
+P.forEach((p, i) => {
+  if (p.g !== last) {
+    if (last) html += '</div></section>';
+    html += `<section data-g="${p.g}"><h2>${p.g}</h2><p class="sub">${groups[p.g]}</p><div>`;
+    last = p.g;
+  }
+  const sols = p.s.map(([h, c]) => `${h ? `<h3>${h}</h3>` : '<h3>Solution</h3>'}<div class="cw"><button class="cp" type="button">Copy</button><pre><code>${hl(c)}</code></pre></div>`).join('');
+  html += `<details data-g="${p.g}"><summary><span class="n">${i+1}</span><span class="t">${p.t}</span>${CH}</summary><div class="body"><h3>Question</h3><p>${p.t}</p>${p.pre||''}${sols}${p.note?`<p class="note">${p.note}</p>`:''}<h3>Explanation</h3>${p.e}</div></details>`;
+});
+$('#list').innerHTML = html + '</div></section>';
+$('#sum').innerHTML = P.map((p,i) => `<tr><td>${i+1}</td><td>${p.k}</td></tr>`).join('');
+
+let tag = '';
+function filter() {
+  const v = $('#q').value.trim().toLowerCase();
+  let shown = 0;
+  all('details').forEach(d => {
+    const ok = (!tag || d.dataset.g === tag) && (!v || d.textContent.toLowerCase().includes(v));
+    d.classList.toggle('hide', !ok); if (ok) shown++;
   });
-  $('#empty').classList.toggle('hidden', shown > 0);
-};
+  all('#list section').forEach(s => s.classList.toggle('hide', !s.querySelector('details:not(.hide)')));
+  $('#empty').classList.toggle('hide', shown > 0);
+}
+$('#q').oninput = filter;
+all('.chip').forEach(b => b.onclick = () => {
+  tag = b.dataset.tag;
+  all('.chip').forEach(x => x.setAttribute('aria-pressed', x === b));
+  filter();
+});
+$('#expand').onclick = () => all('details').forEach(d => d.open = true);
+$('#collapse').onclick = () => all('details').forEach(d => d.open = false);
 document.addEventListener('click', e => {
-  if (!e.target.classList.contains('copy-btn')) return;
-  const code = e.target.parentElement.querySelector('code').innerText;
-  navigator.clipboard.writeText(code).then(() => {
-    e.target.textContent = 'Copied!'; setTimeout(() => e.target.textContent = 'Copy', 1500);
+  if (!e.target.classList.contains('cp')) return;
+  const b = e.target;
+  navigator.clipboard.writeText(b.nextElementSibling.innerText).then(() => {
+    b.textContent = 'Copied'; setTimeout(() => b.textContent = 'Copy', 1500);
   }).catch(() => {});
 });
 const root = document.documentElement;
-try { if (localStorage.theme === 'dark' || (!localStorage.theme && matchMedia('(prefers-color-scheme: dark)').matches)) root.classList.add('dark'); } catch (_) {}
-$('#theme').onclick = () => { root.classList.toggle('dark'); try { localStorage.theme = root.classList.contains('dark') ? 'dark' : 'light'; } catch (_) {} };
+try {
+  const saved = localStorage.getItem('theme');
+  if (saved === 'dark' || (!saved && matchMedia('(prefers-color-scheme: dark)').matches)) root.dataset.theme = 'dark';
+} catch (_) {}
+$('#theme').onclick = () => {
+  const dark = root.dataset.theme !== 'dark';
+  root.dataset.theme = dark ? 'dark' : 'light';
+  try { localStorage.setItem('theme', root.dataset.theme); } catch (_) {}
+};
 </script>
 </body>
 </html>
