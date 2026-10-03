@@ -70,7 +70,7 @@ footer{text-align:center;color:var(--mut);font-size:.85rem;padding:2rem 0}
     <h1>Basic problems<br>in <span>C</span></h1>
     <button id="theme" class="icon" type="button" aria-label="Toggle dark mode">Theme</button>
   </div>
-  <p>Fifteen beginner problems on strings and recursion. Every string is read with a plain <code>getchar()</code> loop, so you see exactly what happens to each character.</p>
+  <p>Fifteen beginner problems on strings and recursion. Every string is read into a char array with a simple loop, so you see exactly what happens to each character.</p>
 </div></header>
 
 <div class="bar"><div class="wrap">
@@ -96,20 +96,21 @@ footer{text-align:center;color:var(--mut);font-size:.85rem;padding:2rem 0}
 
 <script>
 const R = String.raw;
-const READ = (v, size) => R`    while (i < SIZE - 1 && (ch = getchar()) != '\n' && ch != EOF) {
-        ${v}[i++] = (char)ch;
+const READ = v => R`    scanf("%c", &${v}[i]);
+    while (${v}[i] != '\n') {
+        i++;
+        scanf("%c", &${v}[i]);
     }
     ${v}[i] = '\0';`;
-const LOOPNOTE = '<code>getchar()</code> reads one character at a time until Enter or end of input, or until the buffer is full. Spaces are kept, and <code>\'\\0\'</code> is added at the end.';
+const LOOPNOTE = 'The loop reads one character at a time with <code>scanf("%c", ...)</code> and stores it in the array until Enter is pressed. Spaces are kept.';
 
 const P = [
 {t:'Write a program in C to input a string and print it.',g:'Strings',k:'String input and output',
  s:[[0,R`#include <stdio.h>
-#define SIZE 100
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch;
+    char str[100];
+    int i = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -117,16 +118,15 @@ ${READ('str')}
     printf("The string you entered is: %s\n", str);
     return 0;
 }`]],
- e:`<ul><li><code>char str[SIZE]</code> is the character array that holds the string.</li><li>${LOOPNOTE}</li><li>The loop stops at <code>SIZE - 1</code> so there is always room for the final <code>'\\0'</code>.</li></ul>`},
+ e:`<ul><li><code>char str[100]</code> is the character array that holds the string.</li><li>${LOOPNOTE}</li><li>After the loop, <code>'\\0'</code> replaces the newline so the array becomes a proper C string.</li></ul>`},
 
 {t:'Perform string copy with and without library functions.',g:'Strings',k:'String copying',
  s:[['Using the library function',R`#include <stdio.h>
 #include <string.h>
-#define SIZE 100
 
 int main() {
-    char source[SIZE], destination[SIZE];
-    int i = 0, ch;
+    char source[100], destination[100];
+    int i = 0;
 
     printf("Enter the source string: ");
 ${READ('source')}
@@ -136,11 +136,10 @@ ${READ('source')}
     printf("Copied string: %s\n", destination);
     return 0;
 }`],['Without a library function',R`#include <stdio.h>
-#define SIZE 100
 
 int main() {
-    char source[SIZE], destination[SIZE];
-    int i = 0, ch, j = 0;
+    char source[100], destination[100];
+    int i = 0, j = 0;
 
     printf("Enter the source string: ");
 ${READ('source')}
@@ -159,11 +158,10 @@ ${READ('source')}
 {t:'Write a program in C to find the length of a string with and without using library functions.',g:'Strings',k:'String length',
  s:[['Using strlen()',R`#include <stdio.h>
 #include <string.h>
-#define SIZE 100
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch;
+    char str[100];
+    int i = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -171,11 +169,10 @@ ${READ('str')}
     printf("Length of the string is: %zu\n", strlen(str));
     return 0;
 }`],['Without strlen()',R`#include <stdio.h>
-#define SIZE 100
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch, length = 0;
+    char str[100];
+    int i = 0, length = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -187,15 +184,14 @@ ${READ('str')}
     printf("Length of the string is: %d\n", length);
     return 0;
 }`]],
- e:`<p>The length is the number of characters before <code>'\\0'</code>. Because the loop never stores the newline, no extra clean-up is needed.</p>`},
+ e:`<p>The length is the number of characters before <code>'\\0'</code>. The newline was already replaced by <code>'\\0'</code> in the input loop.</p>`},
 
 {t:'Write a program in C to compare two strings without using string library functions.',g:'Strings',k:'String comparison',
  s:[[0,R`#include <stdio.h>
-#define SIZE 100
 
 int main() {
-    char str1[SIZE], str2[SIZE];
-    int i = 0, ch, j = 0;
+    char str1[100], str2[100];
+    int i = 0, j = 0;
 
     printf("Input the 1st string: ");
 ${READ('str1')}
@@ -221,11 +217,10 @@ ${READ('str2')}
  pre:`<p><strong>Input:</strong> <code>Hello, this is 'algorithm lab'</code></p><p><strong>Expected output:</strong> <code>Hello this is algorithm lab</code> then <code>23</code></p>`,
  s:[[0,R`#include <stdio.h>
 #include <ctype.h>
-#define SIZE 200
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch, length = 0;
+    char str[200];
+    int i = 0, length = 0;
 
     printf("Input: ");
 ${READ('str')}
@@ -248,11 +243,10 @@ ${READ('str')}
 {t:'Write a program in C to count the total number of words in a string.',g:'Strings',k:'Word counting',
  s:[[0,R`#include <stdio.h>
 #include <ctype.h>
-#define SIZE 200
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch, words = 0, inWord = 0;
+    char str[200];
+    int i = 0, words = 0, inWord = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -274,7 +268,6 @@ ${READ('str')}
 {t:'Create a function in C to count the total number of alphabets, digits, and special characters in a string.',g:'Strings',k:'Functions + character classification',
  s:[[0,R`#include <stdio.h>
 #include <ctype.h>
-#define SIZE 200
 
 void countCharacters(char str[]) {
     int alphabets = 0, digits = 0, special = 0;
@@ -294,8 +287,8 @@ void countCharacters(char str[]) {
 }
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch;
+    char str[200];
+    int i = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -309,11 +302,10 @@ ${READ('str')}
 {t:'Write a program in C to count the total number of vowels or consonants in a string.',g:'Strings',k:'Vowel and consonant counting',
  s:[[0,R`#include <stdio.h>
 #include <ctype.h>
-#define SIZE 200
 
 int main() {
-    char str[SIZE];
-    int i = 0, ch, vowels = 0, consonants = 0;
+    char str[200];
+    int i = 0, vowels = 0, consonants = 0;
 
     printf("Input the string: ");
 ${READ('str')}
@@ -337,12 +329,11 @@ ${READ('str')}
 
 {t:'Write a program in C to find the maximum number of times a character appears in a string.',g:'Strings',k:'Character frequency',
  s:[[0,R`#include <stdio.h>
-#define SIZE 200
 
 int main() {
-    char str[SIZE];
+    char str[200];
     int frequency[256] = {0};
-    int i = 0, ch, max = 0;
+    int i = 0, max = 0;
     unsigned char maxChar = '\0';
 
     printf("Input the string: ");
